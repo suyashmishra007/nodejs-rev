@@ -5,24 +5,14 @@ const path = require("path");
 
 const session = require("express-session");
 const mongoose = require("mongoose");
-const { Schema } = mongoose;
-const db = mongoose.connect("mongodb://127.0.0.1:27017/udemyNodejs");
-
-const userSchema = new Schema({
-  firstName: String, // String is shorthand for {type: String}
-  lastName: String,
-  email: String,
-});
-
-const User = mongoose.model("User", userSchema);
-
-const user = new User({ firstName: "Suyash", lastName: "Mishra" });
-user.save();
-
+const DB_URI = "mongodb://127.0.0.1:27017/udemyNodejs";
 app.use(express.json());
+
+const db = mongoose.connect(DB_URI);
+
 const MongoDBStore = require("connect-mongodb-session")(session);
 const store = new MongoDBStore({
-  uri: "mongodb://127.0.0.1:27017/udemyNodejs",
+  uri: DB_URI,
   collection: "sessions",
 });
 app.use(
@@ -39,7 +29,7 @@ const loginRoute = require("./routes/login");
 
 app.use("/admin", adminRoute);
 app.use("/shop", shopRoute);
-app.use("/login", loginRoute);
+app.use("/auth", loginRoute);
 
 app.use("/", (req, res, next) => {
   res.status(200).send("<h1>HOME PAGE</h1>");
