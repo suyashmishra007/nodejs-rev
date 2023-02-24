@@ -5,10 +5,12 @@ const path = require("path");
 
 const session = require("express-session");
 const mongoose = require("mongoose");
+const csrf = require("csurf");
 const DB_URI = "mongodb://127.0.0.1:27017/udemyNodejs";
 app.use(express.json());
 
 const db = mongoose.connect(DB_URI);
+const csrfProtection = csrf();
 
 const MongoDBStore = require("connect-mongodb-session")(session);
 const store = new MongoDBStore({
@@ -23,6 +25,8 @@ app.use(
     store: store,
   })
 );
+
+app.use(csrfProtection); // ! not a scaleable way
 const adminRoute = require("./routes/admin");
 const shopRoute = require("./routes/shop");
 const loginRoute = require("./routes/login");
