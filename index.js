@@ -2,18 +2,31 @@ const express = require("express");
 const app = express();
 const port = 3000;
 const path = require("path");
+const nodemailer = require("nodemailer");
+const sendgridTransport = require("nodemailer-sendgrid-transport");
+require("dotenv").config();
 app.use(express.json());
 
-const adminRoute = require("./routes/admin");
-const shopRoute = require("./routes/shop");
+const transporter = nodemailer.createTransport(
+  sendgridTransport({
+    auth: {
+      api_key: process.env.SENDGRID_KEY,
+    },
+  })
+);
+const sendEmail = async () => {
+  try {
+    const res = await transporter.sendMail({
+      to: process.env.SENDGRID_TO,
+      from: process.env.SENDGRID_FROM,
+      subject: "Hello , this email feature is available",
+      html: "<h1>Tested successfully</h1>",
+    });
+    console.log(res);
+    ``;
+  } catch (error) {
+    console.log(error);
+  }
+};
 
-app.use("/admin", adminRoute);
-app.use("/shop", shopRoute);
-
-app.use((req, res, next) => {
-  res.status(404).sendFile(path.join(__dirname, "views", "not-found.html"));
-});
-
-app.listen(port, () => {
-  console.log(`Example app listening on port ${port}`);
-});
+sendEmail();
